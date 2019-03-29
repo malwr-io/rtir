@@ -131,6 +131,9 @@ if ( $total_count > $Rows ) {
         path => RT::IR->HREFTo('Incident/Children/?Lifecycle='. $Lifecycle .'&id='. $id)
     };
 }
+
+$m->callback( CallbackName => 'ModifyBoxActions', %ARGS, IncidentObj => $IncidentObj, BoxActionsRef => \@box_actions, Lifecycle => $Lifecycle );
+
 my $box_actions = join '&nbsp;'x3,
     map q{<a href="} . $_->{'path'} . ( $_->{'class'} ? q{" class="} . $_->{'class'} : '' ) . q{">}
         . $m->interp->apply_escapes( $_->{title}, 'h' ) . q{</a>},
