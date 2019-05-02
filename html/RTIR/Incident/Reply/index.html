@@ -109,6 +109,11 @@
 % }
 % }
 
+<h2><&|/l&>Incident</&></h2>
+<table><tr>
+<td><input type="checkbox" name="SelectedIncident" /></td><td><&|/l&>Add comment to incident ticket</&></td>
+</tr></table>
+
 % unless ( $candidates ) {
 <h2 class="no-recipients">Warning: no recipients!</h2>
 % }
@@ -192,6 +197,12 @@ if ( $SubmitTicket && !$checks_failure ) {
             );
         }
     }
+
+    if ( $SelectedIncident ) {
+        push @results, map { loc("Ticket [_1]: [_2]", $id, $_) }
+            ProcessUpdateMessage( TicketObj => $IncidentObj, ARGSRef => \%ARGS, KeepAttachments => 1 );
+    }
+
     # manually clear this out since we told ProcessUpdateMessage to KeepAttachments
     delete $session{'Attachments'}{ $ARGS{'Token'} };
 
@@ -279,5 +290,6 @@ $Order           => RT->Config->Get('DefaultSearchResultOrder')
 @SelectedReports         => ()
 @SelectedInvestigations  => ()
 @SelectedCountermeasures => ()
+$SelectedIncident        => undef
 $SubmitTicket            => 0
 </%ARGS>
