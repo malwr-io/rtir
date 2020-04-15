@@ -457,7 +457,7 @@ Set(%RTIRSearchResultFormats,
 
     DueIncidents =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
-        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',DueRelative,OwnerName,'UpdateStatus/TITLE:Updates'},
+        q{'<b><a href="__RTIRTicketURI__">__Subject__</a></b>/TITLE:Subject',DueRelative,OwnerName,'UnreadMessages/TITLE:Updates'},
 
     AbandonIncidents =>
         q{'<b><a href="__RTIRTicketURI__">__id__</a></b>/TITLE:#',}.
