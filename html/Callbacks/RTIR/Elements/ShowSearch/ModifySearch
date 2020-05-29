@@ -54,8 +54,10 @@ if (my $c = $m->{'RTIR_ConstituencyFilter'}) {
 # If we're inside RTIR, try to make all the ticket search links point to RTIR
 # A better implementation would check that the ticket is an RTIR ticket, but that
 # would be very, very, computationally intensive
-$OriginalSearch->{Format} =~ s/__WebPath__\/Ticket\/Display.html\?id=__id__/__RTIRTicketURI__/gsm;
-$Search->{Format} =~ s/__WebPath__\/Ticket\/Display.html\?id=__id__/__RTIRTicketURI__/gsm;
+if ($OriginalSearch->{Format} or $Search->{Format} ) {
+    $OriginalSearch->{Format} =~ s/__WebPath__\/Ticket\/Display.html\?id=__id__/__RTIRTicketURI__/gsm;
+    $Search->{Format} =~ s/__WebPath__\/Ticket\/Display.html\?id=__id__/__RTIRTicketURI__/gsm;
+}
 </%init>
 <%args>
 $OriginalSearch => undef
