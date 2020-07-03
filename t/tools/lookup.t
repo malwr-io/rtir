@@ -30,18 +30,33 @@ SKIP:{
     $agent->content_contains('IANA WHOIS server');
     $agent->next_warning_like( qr/Asked to run a full text search from Lookup\.html/ );
 }
+
+    $agent->get_ok("/RTIR/Tools/Lookup.html", "Loaded Lookup page");
+SKIP:{
+    skip "No network", 3 if $no_network;
+    $agent->form_name('ToolFormWhois');
+    $agent->field('q', 'mit.edu');
+    $agent->field('handparse', 0);
+    $agent->select('WhoisServer', 'IANA');
+    $agent->click;
+    $agent->content_contains('WHOIS Results');
+    $agent->content_contains('EDUCAUSE');
+    $agent->content_contains('IANA');
+    $agent->next_warning_like( qr/Asked to run a full text search from Lookup\.html/ );
+}
+
     $agent->get_ok("/RTIR/Tools/Lookup.html", "Loaded Lookup page");
 SKIP:{
     skip "No network", 3 if $no_network;
     $agent->form_name('ToolFormWhois');
     $agent->field('q', 'bestpractical.com');
+    $agent->field('handparse', 0);
     $agent->select('WhoisServer', 'RIPE');
     $agent->click;
     $agent->content_contains('WHOIS Results');
-    $agent->content_contains('response');
-    $agent->content_contains('comment');
-    $agent->content_contains('ERROR:101');
-    $agent->content_contains('No entries found in source RIPE');
+    $agent->content_contains('Errors:');
+    $agent->content_contains('101');
+    $agent->content_contains('No entries found');
     $agent->next_warning_like( qr/Asked to run a full text search from Lookup\.html/ );
 }
 }
