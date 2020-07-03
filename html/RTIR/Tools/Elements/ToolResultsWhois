@@ -59,12 +59,12 @@
 <%PERL>
 my $DoInvestigate = 0;
 if ($WhoisIterator) {
-    while ( $WhoisIterator->isnt_exhausted) {
-        my $block = $WhoisIterator->value;
-        $SavedContent .= $block . "\n";
-        my @lines_starting_with_space = grep /^(\s+)(\w+)/, $block;
-        if ($handparse || $#lines_starting_with_space >= 4) {    #we couldn't parse that. suck
-            my $content = join "", $block;
+    while (my $obj = $WhoisIterator->next) {
+        $SavedContent .= $obj->content . "\n";
+        my @lines_starting_with_space = grep /^(\s+)(\w+)/, $obj->content;
+        if ($handparse || $#lines_starting_with_space >= 4) {
+            # unable or choose not to parse using Net::Whois::RIPE
+            my $content = join "", $obj->content;
             $m->comp('/Elements/MakeClicky',
                      object        => $TicketObj,
                      lookup_params => "ticket=" . ($TicketObj ? $TicketObj->id : 0) . "&server=$WhoisServer",
@@ -76,30 +76,35 @@ if ($WhoisIterator) {
 Structured RIPE whois data returned.
 Click <a href="Lookup.html?q=<% $q |u %>&server=<% $WhoisServer |u %>&handparse=1">here</a> to manually parse this data.
 <%perl>
-my @objects = Net::Whois::Object->new($WhoisIterator);
-foreach my $object ( @objects ) {
-   my %seen;
-   foreach my $attribute ($object->attributes()) {
-       next if ($seen{$attribute});
-       $seen{$attribute} = 1;
-       my @values;
-       foreach my $value ( $object->$attribute() ) {
-         next unless ($value);
-         push (@values, (ref($value) eq 'ARRAY' ) ? @$value : $value);
-       }
-       next unless (scalar @values);
-       my $value = join("\n", ' ', @values);
+my %seen;
+foreach my $error ($obj->error) {
+    next if ($seen{$error});
+    $seen{$error}++;
 </%perl>
-     <b><%$attribute%></b>: 
-<& /Elements/MakeClicky, 
-    ticket => $TicketObj, 
-    lookup_params => "ticket=".$TicketObj->id, 
+<br /><b>Errors:</b><% $error %>
+<%perl>
+  }
+
+foreach my $warning ($obj->warning) {
+    next if ($seen{$warning});
+    $seen{$warning}++;
+</%perl>
+<br /><b>Warnings:</b>:<% $warning %>
+%  }
+<hr />
+<%perl>
+foreach my $attribute ( $obj->attributes ) {
+   foreach my $value ( $obj->$attribute() ) {
+</%perl>
+     <b><%$attribute%></b>:
+<& /Elements/MakeClicky,
+    ticket => $TicketObj,
+    lookup_params => "ticket=" . ($TicketObj ? $TicketObj->id : 0) . "&server=$WhoisServer",
     content => \$value &>
 <% $value |n %><br />
 <%perl>
      }
    }
-
   }
  }
  }
